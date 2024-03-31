@@ -1,4 +1,4 @@
-package ru.polskiy.bookstore.model.types;
+package ru.polskiy.bookstore.db.types;
 
 public enum Genre {
     Detective,
