@@ -8,7 +8,8 @@ import ru.polskiy.bookstore.dto.BookDto;
 @Mapper(componentModel = "spring")
 public interface BookMapper {
     @Mapping(target = "id",ignore = true)
-    @Mapping(target = "user",ignore = true)
+    @Mapping(target = "author",ignore = true)
+    @Mapping(target = "users",ignore = true)
     Book toEntity(BookDto dto);
     BookDto toDto(Book book);
 }

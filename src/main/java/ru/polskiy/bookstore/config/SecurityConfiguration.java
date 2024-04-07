@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.polskiy.bookstore.db.types.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -17,6 +18,7 @@ public class SecurityConfiguration {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request-> request
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/users").hasAuthority(Role.ADMIN.getAuthority())
                         .anyRequest().permitAll())
                 .formLogin(form-> form
                         .loginPage("/login")

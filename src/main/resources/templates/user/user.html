@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>users</title>
+</head>
+<body>
+<div th:if="${user.login== #authentication.principal.username ||
+ #strings.equals(#authentication.getAuthorities().iterator().next(),'ADMIN')}">
+    <form th:action="@{'/users/' + ${user.id}+'/update'}" method="post">
+        <label for="login">Login:
+            <input id="login" type="text" name="login" th:value="${user.login}">
+        </label><br>
+        <label for="firstName">First name:
+            <input id="firstName" type="text" name="firstName" th:value="${user.firstName}">
+        </label><br>
+        <label for="lastname">last name:
+            <input id="lastname" type="text" name="lastName" th:value="${user.lastName}">
+        </label><br>
+        <label>books:
+        </label><br>
+        <div th:if="${#strings.equals(#authentication.getAuthorities().iterator().next(),'ADMIN')}" th:each="role : ${roles}" >
+            <input th:id="${role}" type="radio" name="role" th:value="${role}" th:checked="${role==user.role}">
+            <label th:for="${role}" th:text="${role}">Role name</label>
+        </div>
+        <button type="submit">Update</button>
+    </form>
+</div>
+<div th:unless="${user.login== #authentication.principal.username ||
+ #strings.equals(#authentication.getAuthorities().iterator().next(),'ADMIN')}">
+    <label>Login:
+        <span th:text="${user.login}"/>
+    </label><br>
+    <label>First name:
+        <span th:text="${user.firstName}"/>
+    </label><br>
+    <label>last name:
+        <span th:text="${user.lastName}"/>
+    </label><br>
+    <label>books:
+
+    </label><br>
+</div>
+
+</body>
+</html>

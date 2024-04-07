@@ -19,6 +19,7 @@ import ru.polskiy.bookstore.mapper.UserReadMapper;
 
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,24 +27,42 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
     private final UserCreateEditMapper userCreateEditMapper;
-    private final PasswordEncoder passwordEncoder;
     private final UserReadMapper userReadMapper;
     private final UserRepository userRepository;
+    public List<UserReadDto> findAll(){
+        return userRepository.findAll().stream()
+                .map(userReadMapper::toDto)
+                .toList();
+    }
+    public Optional<UserReadDto> findById(Long id){
+        return userRepository.findById(id)
+                .map(userReadMapper::toDto);
+    }
     @Override
-    public UserDetails loadUserByUsername(String username){
+    public UserDetails loadUserByUsername(String username) {
         return userRepository.findByLogin(username)
                 .map(user -> new org.springframework.security.core.userdetails.User(
                         user.getLogin(),
                         user.getPassword(),
                         Collections.singleton(user.getRole())
-                )).orElseThrow(()->new UsernameNotFoundException("failed to retrieve user:"+username));
+                )).orElseThrow(() -> new UsernameNotFoundException("failed to retrieve user:" + username));
     }
+
     @Transactional
-    public UserReadDto create(UserCreateEditDto userDto){ //TODO write test to check if UserReadDto Correct
+    public UserReadDto create(UserCreateEditDto userDto) { //TODO write test to check if UserReadDto Correct
         return Optional.of(userDto)
                 .map(userCreateEditMapper::toEntity)
                 .map(userRepository::save)
                 .map(userReadMapper::toDto)
                 .orElseThrow();
     }
+
+    @Transactional
+    public Optional<UserReadDto> update(Long id, UserCreateEditDto userDto) {
+        return userRepository.findById(id)
+                .map(userToEdit->userCreateEditMapper.map(userDto, userToEdit))
+                .map(userRepository::saveAndFlush)
+                .map(userReadMapper::toDto);
+    }
+
 }

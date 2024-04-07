@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.NotAudited;
 import ru.polskiy.bookstore.db.types.Role;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Set;
 
 
 @Entity
@@ -17,7 +18,7 @@ import java.util.List;
 @Data
 @Builder
 @Table(name = "users")
-public class User {
+public class User extends AuditingEntity<Long>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +32,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "user")
-    private List<Book> books =new ArrayList<>();
+    @NotAudited
+    @ManyToMany
+    @JoinTable(
+            name = "user_books",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private Set<Book> books;
 }
